@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import Button from "./Button";
+import { TiLocationArrow } from "react-icons/ti";
 
 const Hero = () => {
   // const [currentIndex, setCurrentIndex] = useState(1);
@@ -26,6 +28,25 @@ const Hero = () => {
   const totalVideos = 6;
   const nextVideoRef = useRef(null);
 
+  const videoFocusMap = {
+    1: "right",
+    2: "center",
+    3: "right",
+    4: "left",
+    5: "center",
+    6: "left",
+  };
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize(); // run once
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const currentFocus = isMobile ? videoFocusMap[currentIndex] : "center";
+
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
@@ -51,40 +72,68 @@ const Hero = () => {
         id="video-frame"
         className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75"
       >
-        <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-          <div
-            onClick={handleMiniVdClick}
-            className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-          >
-            <video
-              ref={nextVideoRef}
-              src={getVideoSrc(upcomingVideoIndex)}
-              loop
-              muted
-              id="current-video"
-              className="size-64 origin-center scale-150 object-cover object-center"
-              onLoadedData={handleVideoLoad}
+        <div>
+          <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
+            <div
+              onClick={handleMiniVdClick}
+              className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
+            >
+              <video
+                ref={nextVideoRef}
+                src={getVideoSrc(upcomingVideoIndex)}
+                loop
+                muted
+                id="current-video"
+                className="size-64 origin-center scale-150 object-cover object-center"
+                onLoadedData={handleVideoLoad}
+              />
+            </div>
+          </div>
+          <video
+            ref={nextVideoRef}
+            src={getVideoSrc(currentIndex)}
+            loop
+            muted
+            id="next-video"
+            className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
+            onLoadedData={handleVideoLoad}
+          />
+          <video
+            src={getVideoSrc(currentIndex)}
+            // autoPlay
+            loop
+            muted
+            className="absolute left-0 top-0 size-full object-cover transition-[object-position] duration-500"
+            style={{ objectPosition: currentFocus }}
+            onLoadedData={handleVideoLoad}
+          />
+        </div>
+
+        <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">
+          web<b>d</b>ev
+        </h1>
+        <div className="absolute left-0 top-0 z-40 size-full ">
+          <div className="mt-24 px-5 sm:px-10">
+            <h1 className="special-font hero-heading text-blue-75">
+              joe <br />
+              agua<b>d</b>o
+            </h1>
+            <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
+              Bridging the gap between <br />
+              business and techonology
+            </p>
+            <Button
+              id="watch-trailer"
+              title="View Work"
+              leftIcon={<TiLocationArrow />}
+              containerClass="!bg-emerald-400 flex-center gap-1"
             />
           </div>
         </div>
-        <video
-          ref={nextVideoRef}
-          src={getVideoSrc(currentIndex)}
-          loop
-          muted
-          id="next-video"
-          className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-          onLoadedData={handleVideoLoad}
-        />
-        <video
-          src={getVideoSrc(currentIndex)}
-          autoPlay
-          loop
-          muted
-          className="absolute left-0 top-0 size-full object-cover object-center"
-          onLoadedData={handleVideoLoad}
-        />
       </div>
+      <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
+        web<b>d</b>ev
+      </h1>
     </div>
   );
 };
